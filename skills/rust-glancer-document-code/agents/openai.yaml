@@ -1,0 +1,6 @@
+interface:
+  display_name: "Rust Glancer Document Code"
+  short_description: "Document scoped rust-glancer code"
+  default_prompt: "Use $rust-glancer-document-code to add or revise documentation for this explicit rust-glancer scope."
+policy:
+  allow_implicit_invocation: false

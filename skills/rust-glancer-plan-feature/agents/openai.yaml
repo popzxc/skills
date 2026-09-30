@@ -1,0 +1,6 @@
+interface:
+  display_name: "Rust Glancer Plan Feature"
+  short_description: "Plan gated rust-glancer milestones"
+  default_prompt: "Use $rust-glancer-plan-feature to plan this rust-glancer feature as a gated milestone before writing the plan file."
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Rust Glancer Code Style Review"
+  short_description: "Review rust-glancer code-style smells"
+  default_prompt: "Use $rust-glancer-code-style-review to review this rust-glancer change for uncontroversial code-style smells."
+policy:
+  allow_implicit_invocation: false
