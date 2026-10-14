@@ -1,34 +1,50 @@
 # AGENTS.md
 
+## Be short
+
+LLMs are prone to writing walls of text, which is very tiring. Please be mindful of my time,
+write your ideas in less words. State important things once. Do not over-explain unless asked.
+Assume that I know what we're talking about. And I don't mean compacting the same wall of text
+in less words, I mean only saying things that matter.
+
+Bad example:
+
+```
+The change is done as you requested. I have run all the tests and they pass. The unstaged changes
+are waiting for a review.
+
+The change is doing what you requested, and here's an overview of what was done: <some more text>.
+
+Verification passed: <xxx> tests, <yyy> this, <zzz> that.
+```
+
+Good example: `Done, tests pass.` or `Done, I did not run the tests.`
+
+Bad response for `For (1), does it matter in which order we do things? Or not really? Can I start with dyn trait, then do closures, then do &Something? Or doing it in a specific order will be more optimal?`:
+
+```
+There’s no hard dependency between dyn Trait and closures. But I’d slightly adjust your proposed order:
+1. Preserve reference structure first, or alongside dyn Trait. This is the narrower foundational change: keep “this is a reference” even when its target is partly unknown. It is especially useful around trait objects, which frequently appear as &dyn Trait.
+2. Implement dyn Trait. This gives us a meaningful representation of its declared capabilities, including bounds such as Send. It also improves the types we can later encounter inside closures.
+3. Implement closure captures. This has more moving parts: which values are captured, whether they are borrowed or moved, and how that affects the closure’s capabilities. Having better representations for the captured types makes this work easier to reason about.
+Your order would work, but leaving reference preservation until last could mean revisiting incomplete-type handling in both earlier steps.
+Starting with dyn Trait is reasonable; I’d include reference preservation in that milestone, then tackle closures. We should agree on the meaning of missing information before either implementation, so they follow the same rules.
+```
+
+Good example: `It doesn't matter much, but I suggest &Something, then dyn trait, then closures`.
+
+Remember: if the answer is not detailed enough, I can always ask you to add more details.
+Request to add more details lasts for ONE RESPONSE exactly.
+
 ## Reviews
 
 Present findings for code reviews as plain markdown, do not use native codex functionality.
 
-## General Engineering Principles
+## Agent Behavior Expectations
 
-### Running code or tests
-
-- If compiling code or running tests fails in an unexpected way, pause and clarify with the user before continuing.
-  - "unexpected way" means "not associated with changes made", e.g. if there is no likely link between performed action and observed outcome.
-- Assume failures may be caused by:
-  - Differences between the agent’s execution environment and the user’s environment.
-  - Outdated or incomplete knowledge of the library or API.
-- Avoid repeatedly attempting to fix errors when the underlying assumption may be wrong.
-- As a rule of thumb:
-  - If the code is expected to compile but fails for an unrelated reason, ask whether to continue.
-  - If tests are requested but the project does not compile, explicitly call this out.
-- Unless explicitly instructed, do not fix issues that were not part of the original request or were introduced by the iterative work on the feature.
-
-### Planning
-
-- Design clear abstractions (e.g. traits and structs in Rust) to encapsulate logic.
-- Use files and modules as units of responsibility and logical hierarchy.
-  - Organize them to clearly signal ownership and purpose.
-  - Do not introduce new modules without a concrete reason.
-- Consider domain boundaries.
-  - If a part of the code primarily wraps or adapts a dependency, isolate it in a dedicated module.
-  - The rest of the application should depend on this wrapper, not the dependency directly.
-  - Not every dependency must be wrapped; apply this only to meaningful or core integrations.
+- If a rule is ambiguous, ask for clarification instead of guessing.
+- If a requested change conflicts with these rules, call it out explicitly.
+- Surface architectural or dependency concerns early, before writing code.
 
 ## Code style preferences
 
@@ -37,7 +53,6 @@ otherwise expect to be present.
 
 Add TODO comments for features or nuances that were deemed not important
 to add, support, or implement right away.
-
 ### Literate Programming
 
 Apply literate programming principles to make code self-documenting and maintainable across all languages:
@@ -102,46 +117,6 @@ Avoid over-documenting:
 - If such a dependency exists, propose using it instead of reimplementing.
 - **Never add a new dependency without asking first**, even if it seems obvious or lightweight.
 
-### Change Discipline
-- Prefer small, incremental changes.
-- Do not mix refactors with functional changes unless explicitly requested.
-- If there are multiple reasonable approaches, explain tradeoffs before choosing.
-
-# Common failure modes when helping
-
-## The XY Problem
-
-The XY problem occurs when someone asks about their attempted solution (Y) instead of their actual underlying problem (X).
-
-### The Pattern
-1. User wants to accomplish goal X
-2. User thinks Y is the best approach to solve X
-3. User asks specifically about Y, not X
-4. Helper becomes confused by the odd/narrow request
-5. Time is wasted on suboptimal solutions
-
-### Warning Signs to Watch For
-- Focus on a specific technical method without explaining why
-- Resistance to providing broader context when asked
-- Rejecting alternative approaches outright
-- Questions that seem oddly narrow or convoluted
-- "How do I get the last 3 characters of a filename?" (when they want file extension)
-
-### How to Avoid It (As Helper)
-- **Ask probing questions**: "What are you trying to accomplish overall?"
-- **Request context**: "Can you explain the bigger picture?"
-- **Challenge assumptions**: "Why do you think this approach will work?"
-- **Offer alternatives**: "Have you considered...?"
-
-### Red Flags in User Requests
-- Very specific technical questions without motivation
-- Unusual or roundabout approaches to common problems
-- Dismissal of "why do you want to do that?" questions
-- Focus on implementation details before problem definition
-
-### Key Principle
-Always try to understand the fundamental problem (X) before helping with the proposed solution (Y). The user's approach may not be optimal or may indicate they're solving the wrong problem entirely.
-
 ---
 
 ## Rust Guidelines
@@ -149,7 +124,7 @@ Always try to understand the fundamental problem (X) before helping with the pro
 ### General
 
 - In code that uses `eyre` or `anyhow` `Result`s, consistently use
-  `.context()` prior to every error-propagation with `?`. Context
+  `.context()` prior to error-propagation with `?` when it adds genuine value. Context
   messages in `.context` should be concise and describe the exact thing that
   failed on this step, e.g. "{cmd} failed to spawn".
 - Prefer `expect()` over `unwrap()`. The `expect` message should be very
@@ -190,12 +165,6 @@ Always try to understand the fundamental problem (X) before helping with the pro
 - Prefer `cargo nextest` over `cargo test`
 - For simple unit tests, try to create a test vector of `(input, expected_output, err_message)` and iterate through it, asserting the result with provided `err_message`.
 
-#### Useful Rust frameworks for testing
-- **`quickcheck`**: Property-based testing for when you have an
-  obviously-correct comparison you can test against.
-- **`insta`**: Snapshot testing for regression prevention. Use `cargo
-  insta test` as a stand-in for `cargo test` to run the snapshot tests.
-
 ---
 
 ## TypeScript Guidelines
@@ -215,7 +184,6 @@ Always try to understand the fundamental problem (X) before helping with the pro
 ### Testing
 
 - If project uses `bun`, use the default test harness unless it doesn't fit the requirements.
-
 
 ---
 
@@ -239,11 +207,53 @@ Continue using project-specific environments for project code and tests.
 
 - When type annotations are provided, do not explain the types in documentation. Focus on the meaning of the method.
 
-
 ---
 
-## Agent Behavior Expectations
+### Literate Programming
 
-- If a rule is ambiguous, ask for clarification instead of guessing.
-- If a requested change conflicts with these rules, call it out explicitly.
-- Surface architectural or dependency concerns early, before writing code.
+Apply literate programming principles to make code self-documenting and maintainable across all languages:
+
+#### Core Principles
+
+1. **Explain the Why, Not Just the What**: Focus on business logic, design decisions, and reasoning rather than describing what the code obviously does.
+
+2. **Top-Down Narrative Flow**: Structure code to read like a story with clear sections that build logically:
+   ```rust
+   // ==============================================================================
+   // Plugin Configuration Extraction
+   // ==============================================================================
+   
+   // First, we extract plugin metadata from Cargo.toml to determine
+   // what files we need to build and where to put them.
+   ```
+
+3. **Inline Context**: Place explanatory comments immediately before relevant code blocks, explaining the purpose and any important considerations:
+   ```python
+   # Convert timestamps to UTC for consistent comparison across time zones.
+   # This prevents edge cases where local time changes affect rebuild detection.
+   utc_timestamp = datetime.utcfromtimestamp(file_stat.st_mtime)
+   ```
+
+4. **Avoid Over-Abstraction**: Prefer clear, well-documented inline code over excessive function decomposition when logic is sequential and context-dependent. Functions should serve genuine reusability, not just file organization.
+
+5. **Self-Contained When Practical**: Reduce dependencies on external shared utilities when the logic is straightforward enough to inline with good documentation.
+
+#### Implementation Benefits
+
+- **Maintainability**: Future developers can quickly understand both implementation and design rationale
+- **Debugging**: When code fails, documentation helps identify which logical step failed and why
+- **Knowledge Transfer**: Code serves as documentation of the problem domain, not just the solution
+- **Reduced Cognitive Load**: Readers don't need to mentally reconstruct the author's reasoning
+
+#### When to Apply
+
+Use literate programming for:
+- Complex algorithms with multiple phases or decision points
+- Code implementing business logic rather than simple plumbing
+- Code where the "why" is not immediately obvious from the "what"
+- Integration points between systems where context matters
+
+Avoid over-documenting:
+- Simple utility functions where intent is clear from the signature
+- Trivial getters/setters or obvious wrapper code
+- Code that's primarily syntactic sugar over well-known patterns
