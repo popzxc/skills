@@ -1,6 +1,7 @@
 ---
 name: code-style-review
-description: Review Rust project changes for uncontroversial code-style and structure smells, then propose a refactoring plan without applying changes. Use only when the user explicitly invokes $code-style-review.
+description: Review Rust project changes for uncontroversial code-style and structure smells, then propose a refactoring plan without applying changes. Use only when the user explicitly invokes this skill.
+disable-model-invocation: true
 ---
 
 # Code Style Review
@@ -11,7 +12,7 @@ Use this skill as a focused reviewer for Rust project changes. Identify likely s
 
 ## Workflow
 
-1. Read the applicable `AGENTS.md` and any code-style guidance it links. For Rust Glancer project specifically, read [the Rust Glancer review checks](references/rust-glancer.md).
+1. Read the applicable `AGENTS.md` or `CLAUDE.md` and any code-style guidance it links. For Rust Glancer project specifically, read [the Rust Glancer review checks](references/rust-glancer.md).
 2. Determine the review scope. Prefer the user-specified files or diff; otherwise inspect the working tree with `git status` and `git diff`.
 3. Read the surrounding modules before judging a smell. First look for related types, helpers, existing APIs, and repeated functionality.
 4. Report only uncontroversial or high-confidence findings. If a heuristic is plausible but not clear, mark it as a question or omit it. Ground stylistic findings in a project convention or a concrete effect on the code's readability or maintenance.
@@ -39,4 +40,4 @@ Lead with findings ordered by confidence and impact. Include file and line refer
 
 After findings, provide a short refactoring plan. If no findings are found, say so clearly and mention the review scope. Do not run broad tests or apply changes unless the user asks for implementation.
 
-Present findings as plain markdown, do not use codex internal representation for findings.
+Present findings as plain markdown in the reply; do not use the agent's native findings tool or format.

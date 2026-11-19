@@ -1,6 +1,7 @@
 ---
 name: zola-add-image
 description: "Add supplied images to a Zola blog post, organizing post-specific assets and following the site's light/dark theme. Use when explicitly invoked."
+disable-model-invocation: true
 ---
 
 # Zola Add Image

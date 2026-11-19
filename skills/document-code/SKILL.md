@@ -1,6 +1,8 @@
 ---
 name: document-code
-description: Add or revise documentation comments for an explicit Rust code scope, using example-driven Rust docs that explain why code exists and how to read it. Use only when the user explicitly invokes $document-code and provides an explicit scope such as an unstaged diff, file, module, or symbol list.
+description: Add or revise documentation comments for an explicit Rust code scope, using example-driven Rust docs that explain why code exists and how to read it. Use only when the user explicitly invokes this skill and provides an explicit scope such as an unstaged diff, file, module, or symbol list.
+disable-model-invocation: true
+argument-hint: "<scope: unstaged diff | file | module | symbols>"
 ---
 
 # Document Code
@@ -15,7 +17,7 @@ Comments are pre-reading notes, not reference docs. Optimize for the reader who 
 
 ## Workflow
 
-1. Confirm the explicit documentation scope and read the applicable `AGENTS.md` and any documentation conventions it links.
+1. Confirm the explicit documentation scope and read the applicable `AGENTS.md` or `CLAUDE.md` and any documentation conventions it links.
 2. Inspect the surrounding module and nearby naming/documentation style before writing comments. Do not infer architecture from one symbol alone.
 3. Decide what actually needs documentation. Avoid comments that only repeat names, signatures, or obvious getters/constructors.
 4. Add docs that explain why the code exists, what role it plays, or how to read a non-obvious flow. Keep phrasing simple and direct. Short is good, but clarity beats compression.

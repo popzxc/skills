@@ -21,8 +21,23 @@ If you do, welcome.
 
 `AGENTS.md` was copied from `~/.codex/AGENTS.md`. Each directory under `skills/`
 was copied from `~/.codex/skills/`, including its existing `agents/openai.yaml`
-metadata where present. The imported files retain their original contents,
-including local paths and invocation policies.
+metadata where present.
+
+The skill texts are agent-neutral, so the same files work in Codex and Claude Code.
+Codex reads the invocation policy from `agents/openai.yaml`; Claude Code reads the
+`disable-model-invocation` and `argument-hint` frontmatter keys. Explicit-only skills
+are invoked as `$name` in Codex and `/name` in Claude Code.
+
+## Install for Claude Code
+
+Symlink each skill and `AGENTS.md` (as the global `CLAUDE.md`), so pulling this
+repo updates the installed copies:
+
+```sh
+mkdir -p ~/.claude/skills
+for d in skills/*/; do ln -sfn "$PWD/${d%/}" ~/.claude/skills/"$(basename "$d")"; done
+ln -sfn "$PWD/AGENTS.md" ~/.claude/CLAUDE.md
+```
 
 Bundled `.system` skills, plugin caches, Python cache files, credentials, settings,
 and session data are outside the scope of this repository.

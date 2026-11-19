@@ -29,7 +29,7 @@ are a separate task; do not change implementation behavior while documenting it.
 
 1. **Identify the reader's task.** What should they be able to follow, distinguish,
    or change after reading? Locate the relevant checkout or worktree and read
-   the applicable `AGENTS.md`, documentation conventions, and project vocabulary.
+   the applicable `AGENTS.md` or `CLAUDE.md`, documentation conventions, and project vocabulary.
    Ask only when missing scope would materially change the work; choose routine
    organization yourself.
 2. **Trace the implementation before drafting.** Read the main entrypoint, the
