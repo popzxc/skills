@@ -1,15 +1,13 @@
 ---
-name: rust-glancer-document-code
-description: Add or revise documentation comments for an explicit rust-glancer code scope, using example-driven Rust docs that explain why code exists and how to read it. Use only when the user explicitly invokes $rust-glancer-document-code inside rust-glancer or one of its worktrees and provides an explicit scope such as an unstaged diff, file, module, or symbol list; do not infer this skill from ordinary coding or review requests.
+name: document-code
+description: Add or revise documentation comments for an explicit Rust code scope, using example-driven Rust docs that explain why code exists and how to read it. Use only when the user explicitly invokes $document-code and provides an explicit scope such as an unstaged diff, file, module, or symbol list.
 ---
 
-# Rust Glancer Document Code
+# Document Code
 
 ## Overview
 
 Use this skill to add or alter Rust documentation comments within the exact scope provided by the user. If the scope is not explicit, stop and call that out. Explicit scopes include `unstaged diff`, a particular file, a module, or a list of symbols. Do not assume the scope.
-
-Use only inside `rust-glancer` or one of its worktrees. If invoked outside such a checkout, stop and ask for clarification.
 
 Documentation should onboard the reader to the context that is coming next in the code. Keep phrasing simple and example-driven where examples help. Do not change code behavior as part of this skill unless the documentation task exposes a clear typo or naming issue and the user explicitly approves the code change.
 
@@ -17,7 +15,7 @@ Comments are pre-reading notes, not reference docs. Optimize for the reader who 
 
 ## Workflow
 
-1. Confirm the rust-glancer checkout and the explicit documentation scope.
+1. Confirm the explicit documentation scope and read the applicable `AGENTS.md` and any documentation conventions it links.
 2. Inspect the surrounding module and nearby naming/documentation style before writing comments. Do not infer architecture from one symbol alone.
 3. Decide what actually needs documentation. Avoid comments that only repeat names, signatures, or obvious getters/constructors.
 4. Add docs that explain why the code exists, what role it plays, or how to read a non-obvious flow. Keep phrasing simple and direct. Short is good, but clarity beats compression.
@@ -38,6 +36,8 @@ a slightly more explicit pre-reading note over a compressed summary.
 
 Avoid words like "intentionally" or "deliberately", these are usually fillers that look annoying
 but add little substance.
+
+The Rust examples below illustrate how to explain code. Some use Rust Glancer terminology. Use the same approach with the names and behavior of the project you are documenting.
 
 ### Anti-examples
 

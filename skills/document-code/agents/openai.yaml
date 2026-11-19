@@ -1,0 +1,6 @@
+interface:
+  display_name: "Document Code"
+  short_description: "Write comments for a defined code scope"
+  default_prompt: "Use $document-code to add or revise documentation comments within this scope."
+policy:
+  allow_implicit_invocation: false

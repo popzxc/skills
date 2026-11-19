@@ -1,0 +1,16 @@
+{
+  "workspace": "./fixture",
+  "extension": { "id": "rust-glancer.rust-glancer" },
+  "servers": { "before": null, "after": "./binaries/after/rust-glancer" },
+  "provenance": { "description": "Same fixture and client, comparing the base and changed server" },
+  "scenes": [
+    {
+      "id": "hover",
+      "file": "src/lib.rs",
+      "marker": "pub struct MessageBuffer",
+      "delta": 14,
+      "action": "hover",
+      "width": 1600
+    }
+  ]
+}

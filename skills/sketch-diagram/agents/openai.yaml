@@ -1,0 +1,6 @@
+interface:
+  display_name: "Sketch Diagram"
+  short_description: "Draw simple hand-drawn SVG diagrams"
+
+policy:
+  allow_implicit_invocation: false

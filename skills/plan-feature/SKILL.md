@@ -1,23 +1,27 @@
 ---
-name: rust-glancer-plan-feature
-description: Plan a rust-glancer feature as an explicitly agreed milestone, then write a phased plan under reference/plans only after two confirmation gates. Use only when the user explicitly invokes $rust-glancer-plan-feature for the rust-glancer repository or one of its worktrees; do not infer this skill from ordinary planning, Rust, or LSP requests.
+name: plan-feature
+description: Plan a Rust project feature as an explicitly agreed milestone, then write a phased plan after the user approves the end shape and the phases and filename. Use only when the user explicitly invokes $plan-feature.
 ---
 
-# Rust Glancer Plan Feature
+# Plan Feature
 
 ## Overview
 
-Use this skill to turn a rust-glancer feature request into an agreed milestone plan. Do not implement code during this workflow. Do not write a plan file until the user has approved both the milestone end shape and the phased plan plus filename.
+Use this skill to turn a Rust project feature request into an agreed milestone plan. Do not implement code during this workflow. Do not write a plan file until the user has approved both the milestone end shape and the phased plan plus filename.
+
+## Project conventions
+
+Read the applicable `AGENTS.md` and any planning guidance it links. For Rust Glancer, read [the Rust Glancer plan location and naming conventions](references/rust-glancer.md). Identify the target checkout or worktree by the full Git remote path `github.com/rust-glancer/rust-glancer` (SSH or HTTPS), or by the user's explicit identification of the project.
 
 ## Gates
 
-This workflow has three gates:
+This workflow has three steps:
 
 1. Agree on the milestone scope and end shape.
 2. Agree on the phased high-level plan and plan filename.
-3. Write the plan file under `reference/plans/`.
+3. Write the plan at the approved path.
 
-Stop at each gate and wait for explicit user confirmation. Treat user corrections as scope input to reason about, not as automatic approval.
+Wait for explicit user confirmation after proposing the end shape and again after proposing the phased plan and filename. Treat user corrections as scope input to reason about, not as automatic approval.
 
 ## Step 1: Gather Requirements
 
@@ -77,22 +81,24 @@ After the end shape is agreed, create a high-level phased plan for that scope an
 
 The first phase may be refactoring or missing infrastructure and may have no direct user-visible outcome. Subsequent phases should move gradually toward the milestone. Include a final architecture-alignment phase only when the milestone is meant to prepare a foundation for future scopes.
 
+Propose the location and filename using the user's destination or the project's planning convention. If neither establishes a convention, propose a suitable location and a short descriptive Markdown filename.
+
 Filename guidance:
 
-- Use a simple uppercase name such as `SUPPORT_LSP_RENAME` or `TYPE_INFERENCE_V3`.
+- Match the project's naming convention when it has one.
 - Keep it memorable and not exhaustive.
 - Use the `.md` extension when writing the file.
 
 Filename examples:
 
-- Use `SUPPORT_LSP_RENAME.md` for a rename-support milestone, not `SUPPORT_LSP_RENAME_WITH_WORKSPACE_EDIT_AND_SYMBOL_GRAPH_AND_EDGE_CASES.md`.
-- Use `TYPE_INFERENCE_V3.md` when the user names the scope that way or when it is the next clear type-inference milestone.
+- For a rename-support milestone, a name like `lsp-rename.md` leaves workspace edits, symbol graph details, and edge cases to the plan body.
+- A name like `type-inference-v3.md` fits when the user names the scope that way or when it is the next clear type-inference milestone.
 
 Present the phases and the filename, then ask for explicit confirmation. Do not write the file yet.
 
 ## Step 5: Write The Plan File
 
-After the user confirms the phased plan and filename, create `reference/plans/` if needed and write the plan file there. The `reference` directory is intentionally local developer material; do not check whether it is tracked before using it.
+After the user confirms the phased plan and filename, create the approved directory if needed and write the plan there.
 
 The plan must include:
 
@@ -115,9 +121,9 @@ After writing the file, report the path and summarize the agreed milestone in on
 
 ## Project Context
 
-Plan for a robust, high-quality LSP. Code quality and architecture matter more than rushing visible output, but development should still move forward.
+Plan for a robust, high-quality implementation. Code quality and architecture matter more than rushing visible output, but development should still move forward.
 
-Assume the user knows the current codebase but may not know missing domain foundations. Explain missing prerequisites plainly, especially around LSP, semantic analysis, type inference, trait solving, body IR, def maps, and IDE feature integration.
+Assume the user knows the current codebase but may not know missing domain foundations. Explain missing prerequisites plainly. For LSP features, check the dependencies among semantic analysis, type inference, trait solving, body IR, def maps, and IDE feature integration.
 
 The user may use imprecise terms or underestimate scope. Correct assumptions respectfully and make complexity visible. Prefer plans that help the user learn the domain while the feature is built.
 

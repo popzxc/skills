@@ -1,0 +1,6 @@
+interface:
+  display_name: "Code Style Review"
+  short_description: "Review code style and structure"
+  default_prompt: "Use $code-style-review to review this change for clear style and structure issues and propose a refactoring plan."
+policy:
+  allow_implicit_invocation: false

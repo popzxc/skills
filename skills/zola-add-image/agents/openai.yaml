@@ -1,0 +1,6 @@
+interface:
+  display_name: "Zola Add Image"
+  short_description: "Add theme-aware images to Zola blog posts"
+
+policy:
+  allow_implicit_invocation: false

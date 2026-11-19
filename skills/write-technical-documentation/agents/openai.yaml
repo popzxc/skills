@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Technical Documentation"
+  short_description: "Write example-driven technical guides"
+  default_prompt: "Use $write-technical-documentation to write or revise a guide for this topic with verified code references."

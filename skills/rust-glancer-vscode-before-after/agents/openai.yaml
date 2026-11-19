@@ -1,0 +1,7 @@
+interface:
+  display_name: "Rust Glancer VS Code Before/After"
+  short_description: "Capture Rust Glancer VS Code comparisons for PRs"
+  default_prompt: "Use $rust-glancer-vscode-before-after to capture matching before/after screenshots for this change and export PNG and WebP comparisons."
+
+policy:
+  allow_implicit_invocation: false

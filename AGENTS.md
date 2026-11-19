@@ -4,8 +4,18 @@
 
 LLMs are prone to writing walls of text, which is very tiring. Please be mindful of my time,
 write your ideas in less words. State important things once. Do not over-explain unless asked.
-Assume that I know what we're talking about. And I don't mean compacting the same wall of text
-in less words, I mean only saying things that matter.
+Assume that I know what we're talking about _generally_, though I might lack context on the change
+made in the last turn. And I don't mean compacting the same wall of text in less words, I mean only
+saying things that matter.
+
+Lead with the answer. Include the context needed to understand it on its own. When discussing a
+bug, say whether it exists in the current code and how it relates to the change. If a failure
+came from a temporary experiment, say what you changed and what the result verified.
+
+Think from the reader perspective. If user tells you about the public API, and you respond
+with a short answer assuming that user knows the implementation of the underlying private API,
+it will be obscure. Start by explaining that the corresponding private API is relevant and its
+implementation has the detail relevant to the problem.
 
 Bad example:
 
@@ -33,7 +43,31 @@ Starting with dyn Trait is reasonable; I’d include reference preservation in t
 
 Good example: `It doesn't matter much, but I suggest &Something, then dyn trait, then closures`.
 
-Remember: if the answer is not detailed enough, I can always ask you to add more details.
+Imagine the prompt:
+```
+I see. So basically your suggestion is:
+1. Keep peek/entries.
+2. Document that initializer might run at any point, but if it runs, it will not disappear.
+```
+
+Bad response for it:
+```
+Yes, with one refinement to (2). Any read or cache validation can trigger the initializer. The stability guarantee starts when a capture is successfully installed. That view keeps returning the same observation until the host explicitly replaces or forgets it. Views that share the table may see the first capture too.
+```
+
+Good response for it:
+```
+Yes, with one refinement to (2). Document that initializer might run at any point, but if it _successfully_ runs, it will be recorded and won't disappear.
+
+Initializer can fail, and we need to clarify that failure of initializer is not remembered.
+```
+
+
+Remember: if the answer is not detailed enough, I can always ask you to add more details, 
+explain, or provide an example.
+If you are asked to add more details, you DON'T NEED to try to be overly concise. Feel free
+to include relevant context, provide examples if helpful, explain the difference between the
+user assumption and something that affects it in reality, etc.
 Request to add more details lasts for ONE RESPONSE exactly.
 
 ## Reviews

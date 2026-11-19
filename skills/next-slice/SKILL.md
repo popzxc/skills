@@ -1,17 +1,17 @@
 ---
-name: rust-glancer-next-slice
-description: Choose, propose, and implement the next approved slice from an existing rust-glancer plan in reference/plans, updating the plan only for factual progress afterward. Use only when the user explicitly invokes $rust-glancer-next-slice inside the rust-glancer repository or one of its worktrees and identifies the exact plan file; do not infer this skill from ordinary implementation or review requests.
+name: next-slice
+description: Choose, propose, and implement the next approved slice from an existing Rust project plan, updating the plan only for factual progress afterward. Use only when the user explicitly invokes $next-slice and identifies the exact plan file.
 ---
 
-# Rust Glancer Next Slice
+# Next Slice
 
 ## Overview
 
-Use this skill to continue an already-approved rust-glancer plan one slice at a time. The plan must already exist under `reference/plans/`, and the user must identify the exact plan file. If the file is not known or the plan does not exist, stop and ask for clarification. Do not assume.
+Use this skill to continue an already-approved Rust project plan one slice at a time. The plan must already exist, and the user must identify the exact plan file. If the file is not known or the plan does not exist, stop and ask for clarification. Do not assume.
 
 ## Applicability
 
-Use only inside `rust-glancer` or one of its worktrees. If invoked outside such a checkout, stop and ask for clarification.
+Read the applicable `AGENTS.md` for the target checkout or worktree and any implementation guidance it links.
 
 Before choosing a slice, read the selected plan file and inspect enough of the current implementation to match planned progress to actual code. Treat the plan as guidance written before implementation, not as perfect current truth.
 

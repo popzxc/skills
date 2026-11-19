@@ -1,0 +1,6 @@
+interface:
+  display_name: "Plan Feature"
+  short_description: "Agree on a phased feature milestone"
+  default_prompt: "Use $plan-feature to agree on this milestone and its phases before writing the plan."
+policy:
+  allow_implicit_invocation: false
