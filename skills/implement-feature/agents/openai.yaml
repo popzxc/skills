@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implement Feature"
+  short_description: "Implement, clean up, review, and resolve feedback"
+  default_prompt: "Use $implement-feature to implement the feature we agreed on, clean it up, run independent reviews, and address their feedback."

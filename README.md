@@ -8,6 +8,7 @@ If you do, welcome.
 - [`AGENTS.md`](AGENTS.md): shared engineering practices and agent behavior preferences.
 - [`code-style-review`](skills/code-style-review/SKILL.md): review Rust code style and propose refactoring.
 - [`document-code`](skills/document-code/SKILL.md): document an explicitly scoped part of a Rust project.
+- [`implement-feature`](skills/implement-feature/SKILL.md): implement an agreed feature, clean up, run parallel independent reviews, and resolve feedback.
 - [`next-slice`](skills/next-slice/SKILL.md): implement the next approved slice of a Rust project plan.
 - [`plan-feature`](skills/plan-feature/SKILL.md): plan a Rust project feature through explicit approval gates.
 - [`review-implemented-change`](skills/review-implemented-change/SKILL.md): review uncommitted changes for correctness and architectural fit.
@@ -19,10 +20,10 @@ If you do, welcome.
 
 ## Import
 
-`AGENTS.md` was copied from `~/.codex/AGENTS.md`. Each directory under `skills/`
-was copied from `~/.codex/skills/`, including its existing `agents/openai.yaml`
-metadata where present. The imported files retain their original contents,
-including local paths and invocation policies.
+`AGENTS.md` and the original skills were copied from `~/.codex`, including
+existing `agents/openai.yaml` metadata where present. Imported files retain
+their original contents, including local paths and invocation policies. New
+skills can also be authored here.
 
 Bundled `.system` skills, plugin caches, Python cache files, credentials, settings,
 and session data are outside the scope of this repository.
