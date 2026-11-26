@@ -1,6 +1,0 @@
-interface:
-  display_name: "Next Slice"
-  short_description: "Choose and implement a planned slice"
-  default_prompt: "Use $next-slice with the selected plan file to propose and implement the next approved slice."
-policy:
-  allow_implicit_invocation: false
