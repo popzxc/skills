@@ -1,6 +1,8 @@
 ---
 name: plan-feature
-description: Plan a Rust project feature as an explicitly agreed milestone, then write a phased plan after the user approves the end shape and the phases and filename. Use only when the user explicitly invokes $plan-feature.
+description: Plan a Rust project feature as an explicitly agreed milestone, then write a phased plan after the user approves the end shape and the phases and filename. Use only when the user explicitly invokes this skill.
+disable-model-invocation: true
+argument-hint: "<feature request>"
 ---
 
 # Plan Feature
@@ -11,7 +13,7 @@ Use this skill to turn a Rust project feature request into an agreed milestone p
 
 ## Project conventions
 
-Read the applicable `AGENTS.md` and any planning guidance it links. For Rust Glancer, read [the Rust Glancer plan location and naming conventions](references/rust-glancer.md). Identify the target checkout or worktree by the full Git remote path `github.com/rust-glancer/rust-glancer` (SSH or HTTPS), or by the user's explicit identification of the project.
+Read the applicable `AGENTS.md` or `CLAUDE.md` and any planning guidance it links. For Rust Glancer, read [the Rust Glancer plan location and naming conventions](references/rust-glancer.md). Identify the target checkout or worktree by the full Git remote path `github.com/rust-glancer/rust-glancer` (SSH or HTTPS), or by the user's explicit identification of the project.
 
 ## Gates
 

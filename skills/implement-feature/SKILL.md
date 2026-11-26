@@ -11,7 +11,7 @@ Invoking this workflow requests its delegated skill calls and authorizes clear, 
 
 ## Establish the scope
 
-- Read the applicable `AGENTS.md` and inspect the current checkout. Record the starting working-tree changes so unrelated user work stays outside the implementation and review scope.
+- Read the applicable `AGENTS.md` or `CLAUDE.md` and inspect the current checkout. Record the starting working-tree changes so unrelated user work stays outside the implementation and review scope.
 - Recover the agreed behavior, constraints, and non-goals from the conversation. Ask only about missing decisions that materially affect implementation. Do not require or create a written plan.
 - Resolve the three companion skills: [review-implemented-change](../review-implemented-change/SKILL.md), [code-style-review](../code-style-review/SKILL.md), and [reviewer-feedback](../reviewer-feedback/SKILL.md). These links refer to sibling skill directories; use their installed equivalents if the skills live elsewhere. Read their instructions rather than substituting remembered summaries.
 - Confirm that two independent subagents can run with the main agent's model and reasoning effort. Prefer inherited settings when the delegation tool guarantees them; otherwise pass the known matching settings explicitly. Do not silently downgrade either setting. If the necessary skills, delegation, or matching settings are unavailable, explain the limitation before proceeding with a reduced workflow.
@@ -38,7 +38,7 @@ Fix clear issues without broadening the assignment into a general refactor. Re-r
 
 Freeze the implementation after cleanup. Both reviewers must inspect the same code state, including the scoped staged, unstaged, and untracked changes. Do not edit the shared checkout while either review is running. If the user or another process changes that state, resolve the scope and restart the affected review before treating its report as current.
 
-Spawn two fresh subagents with the same model and reasoning effort as the main agent. Start both before waiting for either. Use an empty conversation history, such as `fork_turns="none"`, rather than inheriting the implementation discussion. Give each reviewer this neutral task context:
+Spawn two fresh subagents with the same model and reasoning effort as the main agent. Start both before waiting for either. Use an empty conversation history rather than inheriting the implementation discussion. Give each reviewer this neutral task context:
 
 - the target checkout and exact review scope, including any relevant pre-existing changes and excluded user work;
 - the agreed behavior, constraints, and non-goals needed to judge the change;
@@ -47,10 +47,10 @@ Spawn two fresh subagents with the same model and reasoning effort as the main a
 
 Do not send the implementer's reasoning, self-assessment, suspected findings, or preferred verdict. Do not share one reviewer's findings with the other.
 
-Assign the reviewers separately:
+Assign the reviewers separately, using the agent's skill invocation syntax or providing the resolved `SKILL.md` path in the delegated request:
 
-1. Invoke `$review-implemented-change` to review correctness, integration, maintainability, and architectural fit, with its secondary test-quality check.
-2. Invoke `$code-style-review` to review high-confidence style and structure issues and return its proposed refactoring plan. This reviewer remains review-only; the main agent evaluates and applies applicable suggestions in the next stage.
+1. Invoke `review-implemented-change` to review correctness, integration, maintainability, and architectural fit, with its secondary test-quality check.
+2. Invoke `code-style-review` to review high-confidence style and structure issues and return its proposed refactoring plan. This reviewer remains review-only; the main agent evaluates and applies applicable suggestions in the next stage.
 
 Tell both reviewers to make no edits, run no formatting or other source-mutating commands, and send only their final report to the main agent. A focused check for a concrete concern is allowed if it preserves the reviewed code state; avoid concurrent checks that would conflict through shared artifacts. Reports must use plain Markdown with actionable file/line references, or explicitly state that there are no findings. A failed or incomplete review is not a clean review.
 
@@ -62,7 +62,7 @@ If one final report arrives first, hold it until the other reviewer finishes. Do
 
 ## 4. Resolve feedback
 
-Once both reviews finish successfully, use `$reviewer-feedback` in the main agent on both final reports. Invocation of this workflow already requests applying clear, in-scope review fixes; the style review's proposed plan does not add a blanket approval gate here.
+Once both reviews finish successfully, use `reviewer-feedback` in the main agent on both final reports. Invocation of this workflow already requests applying clear, in-scope review fixes; the style review's proposed plan does not add a blanket approval gate here.
 
 Evaluate findings against the actual code and the agreed intent. Merge duplicate findings while retaining their sources. Address correctness issues first where they affect style suggestions, and re-check each remaining suggestion against the code after earlier fixes. Parallel reports describe the same pre-fix state, so a suggestion may already have been resolved or become obsolete.
 

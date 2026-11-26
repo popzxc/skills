@@ -1,6 +1,8 @@
 ---
 name: next-slice
-description: Choose, propose, and implement the next approved slice from an existing Rust project plan, updating the plan only for factual progress afterward. Use only when the user explicitly invokes $next-slice and identifies the exact plan file.
+description: Choose, propose, and implement the next approved slice from an existing Rust project plan, updating the plan only for factual progress afterward. Use only when the user explicitly invokes this skill and identifies the exact plan file.
+disable-model-invocation: true
+argument-hint: "<plan file>"
 ---
 
 # Next Slice
@@ -11,7 +13,7 @@ Use this skill to continue an already-approved Rust project plan one slice at a 
 
 ## Applicability
 
-Read the applicable `AGENTS.md` for the target checkout or worktree and any implementation guidance it links.
+Read the applicable `AGENTS.md` or `CLAUDE.md` for the target checkout or worktree and any implementation guidance it links.
 
 Before choosing a slice, read the selected plan file and inspect enough of the current implementation to match planned progress to actual code. Treat the plan as guidance written before implementation, not as perfect current truth.
 

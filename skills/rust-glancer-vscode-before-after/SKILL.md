@@ -1,6 +1,7 @@
 ---
 name: rust-glancer-vscode-before-after
 description: Capture matched VS Code screenshots comparing Rust Glancer servers for PR descriptions or release posts, with labeled PNG and lossless WebP exports. Use only when explicitly invoked by the user.
+disable-model-invocation: true
 ---
 
 # Rust Glancer VS Code Before/After
@@ -40,9 +41,9 @@ explicit extension path when client choice matters. Changes to the client itself
 client comparison, rather than this server-swap mode.
 
 Choose an output directory in the user's requested location, or an ignored local reference
-directory if the project provides one. Use a Python runtime with **Pillow already available**;
-the Codex workspace dependency loader can locate one. Do not install dependencies just to run
-this skill. The capture helper requires VS Code, the existing Swift command-line tools, and
+directory if the project provides one. Use a Python runtime with **Pillow already available**.
+If none has it, `uv run --with pillow python ...` gives a throwaway environment without touching
+the project or system Python. Do not otherwise install dependencies just to run this skill. The capture helper requires VS Code, the existing Swift command-line tools, and
 macOS 14 or later. Composition alone works wherever Python and Pillow are available.
 
 ```sh
@@ -77,7 +78,8 @@ indefinitely. Cleanup is bounded and targets only processes descended from the i
 
 The output contains `SCENE/before.png`, `SCENE/after.png`, their JSON scene evidence,
 `SCENE/comparison.png`, `SCENE/comparison.webp`, and a provenance/cleanup `manifest.json`.
-Inspect both originals and the comparison with `view_image`. Confirm that the actual widgets
+Inspect both originals and the comparison with the image viewer tool (`view_image` in Codex,
+`Read` in Claude Code). Confirm that the actual widgets
 are visible, the difference is representative, and neither part shows a stale view. Provider
 data alone does not verify a rendered screenshot.
 

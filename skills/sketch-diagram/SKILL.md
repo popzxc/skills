@@ -1,6 +1,7 @@
 ---
 name: sketch-diagram
 description: "Create or revise sparse, hand-drawn SVG diagrams and conceptual illustrations, with matching light and dark variants. Use when explicitly invoked."
+disable-model-invocation: true
 ---
 
 # Sketch Diagram
