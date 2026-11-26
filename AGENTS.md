@@ -1,37 +1,31 @@
 # AGENTS.md
 
-## Be short
+## Communication
 
-LLMs are prone to writing walls of text, which is very tiring. Please be mindful of my time,
-write your ideas in less words. State important things once. Do not over-explain unless asked.
-Assume that I know what we're talking about _generally_, though I might lack context on the change
-made in the last turn. And I don't mean compacting the same wall of text in less words, I mean only
-saying things that matter.
+Whenever you respond, avoid using jargon. Prefer using simple words, orient your response
+to a person for whom English is not a native language. Long sentences are fine, but complex
+phrases or overly compacted sentences may increase cognitive overhead.
 
-Lead with the answer. Include the context needed to understand it on its own. When discussing a
-bug, say whether it exists in the current code and how it relates to the change. If a failure
-came from a temporary experiment, say what you changed and what the result verified.
+LLMs are prone to two failure modes: either generating a wall of text, or trying to compact
+a lot of meaning into small amount of text. Both are very tiring. Instead, use a way that
+is natural to humans: answer on the highest level that is appropriate for question without
+digging into lower level details unless asked.
 
-Think from the reader perspective. If user tells you about the public API, and you respond
-with a short answer assuming that user knows the implementation of the underlying private API,
-it will be obscure. Start by explaining that the corresponding private API is relevant and its
-implementation has the detail relevant to the problem.
+Depending on the context, there are two modes of communication:
 
-Bad example:
+**Default mode** Provide a concise, sufficient response, that can omit irrelevant clarifications.
+The focus of a response is to answer on a level of detail that corresponds to the topic being
+discussed. If user asks a question without mentioning a particular file, you should not respond
+as if user knows which file is being discussed / remembers all the concrete decisions. For a
+high level question, a high level answer is often sufficient. If user specifies a file, you
+might assume that user has this file open and has context about it, but not necessarily context
+about 10 other files that might be related. Before answering, think whether the answer assumes
+the knowledge user might not have, and whether the answer includes details that are not
+significant for the question asked.
 
-```
-The change is done as you requested. I have run all the tests and they pass. The unstaged changes
-are waiting for a review.
+In this mode, imagine that user asks you: `For (1), does it matter in which order we do things? Or not really? Can I start with dyn trait, then do closures, then do &Something? Or doing it in a specific order will be more optimal?`:
 
-The change is doing what you requested, and here's an overview of what was done: <some more text>.
-
-Verification passed: <xxx> tests, <yyy> this, <zzz> that.
-```
-
-Good example: `Done, tests pass.` or `Done, I did not run the tests.`
-
-Bad response for `For (1), does it matter in which order we do things? Or not really? Can I start with dyn trait, then do closures, then do &Something? Or doing it in a specific order will be more optimal?`:
-
+Bad answer would be:
 ```
 There’s no hard dependency between dyn Trait and closures. But I’d slightly adjust your proposed order:
 1. Preserve reference structure first, or alongside dyn Trait. This is the narrower foundational change: keep “this is a reference” even when its target is partly unknown. It is especially useful around trait objects, which frequently appear as &dyn Trait.
@@ -41,115 +35,57 @@ Your order would work, but leaving reference preservation until last could mean 
 Starting with dyn Trait is reasonable; I’d include reference preservation in that milestone, then tackle closures. We should agree on the meaning of missing information before either implementation, so they follow the same rules.
 ```
 
-Good example: `It doesn't matter much, but I suggest &Something, then dyn trait, then closures`.
+Good answer would be: `It doesn't matter much, but I suggest &Something, then dyn trait, then closures`.
 
-Imagine the prompt:
-```
-I see. So basically your suggestion is:
-1. Keep peek/entries.
-2. Document that initializer might run at any point, but if it runs, it will not disappear.
-```
-
-Bad response for it:
-```
-Yes, with one refinement to (2). Any read or cache validation can trigger the initializer. The stability guarantee starts when a capture is successfully installed. That view keeps returning the same observation until the host explicitly replaces or forgets it. Views that share the table may see the first capture too.
-```
-
-Good response for it:
-```
-Yes, with one refinement to (2). Document that initializer might run at any point, but if it _successfully_ runs, it will be recorded and won't disappear.
-
-Initializer can fail, and we need to clarify that failure of initializer is not remembered.
-```
-
-
-Remember: if the answer is not detailed enough, I can always ask you to add more details, 
-explain, or provide an example.
-If you are asked to add more details, you DON'T NEED to try to be overly concise. Feel free
-to include relevant context, provide examples if helpful, explain the difference between the
-user assumption and something that affects it in reality, etc.
-Request to add more details lasts for ONE RESPONSE exactly.
+**Clarification mode** If user asks a clarifying questions, it does not mean that you failed
+and need to err to more detailed answers in the future. Clarifications are a normal part of
+conversation, and it means that user want to go deeper. Treat it as a different communication
+mode: until user keeps digging, your goal is to actually teach them and help understand the
+topic, and build a mental model that would allow understanding the thing being discussed.
+Depending on the situation, either short recap on the surrounding context or some examples
+might be helpful. This is most relevant in situations where user studies LLM output, like
+code review stage: in such situations, often what is needed is not an explanation of how
+exactly code works, but rather the context on why the code is written that way: which task
+does it solve, whether there are some caveats that affect the design, or there is a dependency
+that is also important to understand (even if it's not explicitly mentioned; user reviews
+code one file at a time, and might forget about some other thing, especially if it's not present
+in the diff).
 
 ## Reviews
 
 Present findings for code reviews as plain markdown in the reply, do not use the agent's native findings tool or format.
 
-## Agent Behavior Expectations
+## Testing Philosophy
 
-- If a rule is ambiguous, ask for clarification instead of guessing.
-- If a requested change conflicts with these rules, call it out explicitly.
-- Surface architectural or dependency concerns early, before writing code.
+Good tests are the tests that survive refactoring. A good test should not assume the internal logic of a function
+or internal dependencies; it should rely on a public interface.
 
-## Code style preferences
+Tests without setup usually are best checked with test vectors of `(input, expected, message)`.
 
-Document when you have intentionally omitted code that the reader might
-otherwise expect to be present.
+Tests with setup have tendency of being fragile and hard to read. With such tests, it makes sense to invest into
+architecture early. A good pattern is to create `tests/mod.rs` and `tests/utils.rs`, where `utils.rs` will provide
+means to implement tests in a way that would allow focusing on the actual test logic.
 
-Add TODO comments for features or nuances that were deemed not important
-to add, support, or implement right away.
-### Literate Programming
+When possible, the test should follow the arrange/assert pattern: first we perform an action, then we assert the
+outcome. When possible, the best way to do it is to use a fixture and a snapshot with crates such as `expect_test`
+or `insta`.
 
-Apply literate programming principles to make code self-documenting and maintainable across all languages:
+For each test, the focus should be on externally observable behavior. Locking the internal implementation details
+or limitations is an anti-pattern. We do not seek 100% coverage, we aim to have small amount of high-signal tests.
+During self-review, check if added tests justify the functionality being tested; if no, perform a cleanup and
+remove the tests that were only useful to validate behavior and are unlikely to provide value in the future.
 
-#### Core Principles
+## Dependencies
 
-1. **Explain the Why, Not Just the What**: Focus on business logic, design decisions, and reasoning rather than describing what the code obviously does.
+Before implementing functionality, check whether a well-known, mature dependency already solves the problem. 
+If such a dependency exists, stop and propose using it instead of reimplementing.
 
-2. **Top-Down Narrative Flow**: Structure code to read like a story with clear sections that build logically:
-   ```rust
-   // ==============================================================================
-   // Plugin Configuration Extraction
-   // ==============================================================================
-   
-   // First, we extract plugin metadata from Cargo.toml to determine
-   // what files we need to build and where to put them.
-   ```
+**Never add a new dependency to a workspace without asking first**, even if it seems obvious or lightweight.
 
-3. **Inline Context**: Place explanatory comments immediately before relevant code blocks, explaining the purpose and any important considerations:
-   ```python
-   # Convert timestamps to UTC for consistent comparison across time zones.
-   # This prevents edge cases where local time changes affect rebuild detection.
-   utc_timestamp = datetime.utcfromtimestamp(file_stat.st_mtime)
-   ```
-
-4. **Avoid Over-Abstraction**: Prefer clear, well-documented inline code over excessive function decomposition when logic is sequential and context-dependent. Functions should serve genuine reusability, not just file organization.
-
-5. **Self-Contained When Practical**: Reduce dependencies on external shared utilities when the logic is straightforward enough to inline with good documentation.
-
-#### Implementation Benefits
-
-- **Maintainability**: Future developers can quickly understand both implementation and design rationale
-- **Debugging**: When code fails, documentation helps identify which logical step failed and why
-- **Knowledge Transfer**: Code serves as documentation of the problem domain, not just the solution
-- **Reduced Cognitive Load**: Readers don't need to mentally reconstruct the author's reasoning
-
-#### When to Apply
-
-Use literate programming for:
-- Complex algorithms with multiple phases or decision points
-- Code implementing business logic rather than simple plumbing
-- Code where the "why" is not immediately obvious from the "what"
-- Integration points between systems where context matters
-
-Avoid over-documenting:
-- Simple utility functions where intent is clear from the signature
-- Trivial getters/setters or obvious wrapper code
-- Code that's primarily syntactic sugar over well-known patterns
-
-### Testing Philosophy
-- Prefer tests that validate **observable behavior**, not implementation details.
-- Tests should remain valid across most refactors.
-- Prefer fixtures, golden files, and explicit test vectors.
-- Avoid tests with complex or fragile setup.
-- A small number of high-signal tests is better than high coverage.
-- 100% coverage is **not** a goal.
-- Focus on positive scenarios (things work when they should).
-- Add negative or adversarial tests **only when explicitly requested**.
-
-### Dependencies
-- Before implementing functionality, check whether a well-known, mature dependency already solves the problem.
-- If such a dependency exists, propose using it instead of reimplementing.
-- **Never add a new dependency without asking first**, even if it seems obvious or lightweight.
+Adding a common dependency already used inside of the workspace to a crate is fine, as long as it fits
+the logical design of workspace and does not create architectural issues. Clear example: if `sqlx` is
+used only in a single crate that isolates DB access from the rest of crates, adding `sqlx` elsewhere requires
+asking for permission. Adding `tracing`, if it's already present in workspace, is fine in most cases.
 
 ---
 
@@ -159,10 +95,12 @@ Avoid over-documenting:
 
 - In code that uses `eyre` or `anyhow` `Result`s, consistently use
   `.context()` prior to error-propagation with `?` when it adds genuine value. Context
-  messages in `.context` should be concise and describe the exact thing that
+  messages in `context` should be concise and describe the exact thing that
   failed on this step, e.g. "{cmd} failed to spawn".
 - Prefer `expect()` over `unwrap()`. The `expect` message should be very
   concise, and should explain why that expect call cannot fail.
+- In tests, `context` is typically not needed, and `unwrap` can be fine on self-obvious statements.
+  For tests, it is important that the logical flow can be read.
 
 ### Project Structure
 - New Rust projects must include:
@@ -181,6 +119,7 @@ Avoid over-documenting:
 - Enable features only at the crate level.
 
 ### Macros and Imports
+
 - Prefer fully qualified macro paths:
   - `anyhow::anyhow!`
   - `tracing::info!`
@@ -196,7 +135,7 @@ Avoid over-documenting:
 
 ### Testing
 
-- Prefer `cargo nextest` over `cargo test`
+- Prefer `cargo nextest` over `cargo test` when it's installed.
 - For simple unit tests, try to create a test vector of `(input, expected_output, err_message)` and iterate through it, asserting the result with provided `err_message`.
 
 ---
@@ -223,7 +162,7 @@ Avoid over-documenting:
 
 ## Python Guidelines
 
-## Tooling
+### Tooling
 
 - Use `uv` as a package manager and `ruff` as a formatter.
 - Prefer proper typing.
@@ -237,6 +176,6 @@ Otherwise, use `uv run --with pyyaml python ...`.
 
 Continue using project-specific environments for project code and tests.
 
-## Documentation
+### Documentation
 
 - When type annotations are provided, do not explain the types in documentation. Focus on the meaning of the method.
